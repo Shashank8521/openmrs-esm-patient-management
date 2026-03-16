@@ -24,7 +24,7 @@ const PatientQueueHeader: React.FC<PatientQueueHeaderProps> = ({ title, showFilt
   const { queueLocations, isLoading, error } = useQueueLocations();
   const { dashboardTitle } = useConfig<ConfigObject>();
   const userSession = useSession();
-  const { selectedQueueLocationName, selectedQueueLocationUuid, selectedServiceDisplay } = useServiceQueuesStore();
+  const { selectedQueueLocationName, selectedQueueLocationUuid, selectedServiceUuid } = useServiceQueuesStore();
   const { queues } = useQueues();
   const showLocationDropdown = showFilters && queueLocations.length > 1;
   const showServiceDropdown = showFilters && queues.length > 1;
@@ -40,6 +40,8 @@ const PatientQueueHeader: React.FC<PatientQueueHeaderProps> = ({ title, showFilt
       }, []);
     return options.length !== 1 ? [{ id: 'all', name: t('all', 'All') }, ...options] : options;
   }, [queues, t]);
+  const selectedServiceItem =
+    serviceOptions.find((option) => option.id === selectedServiceUuid) ?? serviceOptions[0] ?? null;
 
   const handleQueueLocationChange = useCallback(
     ({ selectedItem }) => {
@@ -138,9 +140,10 @@ const PatientQueueHeader: React.FC<PatientQueueHeaderProps> = ({ title, showFilt
             aria-label={t('selectService', 'Select a service')}
             className={styles.dropdown}
             id="serviceDropdown"
-            label={selectedServiceDisplay ?? t('all', 'All')}
             items={serviceOptions}
             itemToString={(item) => item?.name}
+            label=""
+            selectedItem={selectedServiceItem}
             titleText={t('service', 'Service')}
             type="inline"
             onChange={handleServiceChange}
